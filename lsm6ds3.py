@@ -32,7 +32,6 @@ class LSM6DS3(object):
 
     # Unused constants
     WHO_AM_I=0x0F
-    LSM6DS3_ADDR=0b1101010
     SCALE_FOR_2G=0.0001
     SCALE_FOR_4G=0.0002
     SCALE_FOR_8G=0.0004
@@ -48,11 +47,12 @@ class LSM6DS3(object):
     DIV_500_DPS=1750
     DIV_2000_DPS=7000
 
-    initial_reg_values = []
+    initial_reg_values = [0x70, 0x4c, 0x44, 0x0, 0x0,
+                          0x0, 0x50, 0x0, 0x38, 0x38]
     initial_registers = ['CTRL1_XL', 'CTRL2_G', 'CTRL3_C', 'CTRL4_C', 'CTRL5_C',
                          'CTRL6_C', 'CTRL7_G', 'CTRL8_XL', 'CTRL9_XL', 'CTRL10_C']
 
-    def __init__(self, bus=1, addr=0x00):
+    def __init__(self, bus=1, addr=0x6a):
         # Initializing the I2C bus object
         self.bus_num = bus
         self.bus = smbus.SMBus(self.bus_num)
@@ -67,7 +67,7 @@ class LSM6DS3(object):
                  register values. Set 'lsm.initial_registers' properly!"
         # Writing initial values into registers
         for i, reg_name in enumerate(self.initial_registers):
-            self.write_reg(getattr(self, reg_name), initial_reg_values[i])
+            self.write_reg(getattr(self, reg_name), self.initial_reg_values[i])
         return True
 
     def get_raw_gyro_values(self):
@@ -111,3 +111,16 @@ class LSM6DS3(object):
 
     def read_reg(self, reg):
         return self.bus.read_byte_data(self.addr, reg)
+
+if __name__ == "__main__":
+    from time import sleep
+    lsm = LSM6DS3()
+    lsm.setup()
+    while True:
+        ax, ay, az = lsm.get_raw_accel_values()
+        print("Raw accel values: \t X {} \t Y {} \t Z {}".format(ax, ay, az))
+        sleep(0.02)
+    while True:
+        gx, gy, gz = lsm.get_raw_gyro_values()
+        print("Raw gyro values: \t X {} \t\t Y {} \t\t Z {}".format(gx, gy, gz))
+        sleep(0.02)
