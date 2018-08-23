@@ -60,7 +60,14 @@ class LSM6DS3(object):
             addr = int(addr, 16)
         self.addr = addr
 
-    def setup(self):
+    def detect(self):
+        assert(self.read_reg(self.WHO_AM_I) == 0x69), "Identification register value \
+                                                       is wrong! Pass 'detect=False' \
+                                                       to setup() to disable the check."
+
+    def setup(self, detect=True):
+        if detect:
+            self.detect()
         # Safety check
         assert(len(self.initial_reg_values) == len(self.initial_registers)), \
                 "Number of initial registers is not equal to number of initial \
