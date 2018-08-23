@@ -46,8 +46,8 @@ lsm.write_reg(0x12, 0x45)
 lsm = LSM6DS3()
 lsm.setup()
 
-lsm.write_reg(lsm.CTRL1_XL, 0x1)
-lsm.write_reg(0x12, 0x45)
+print(lsm.read_reg(lsm.OUTY_L_G))
+print(lsm.read_reg(0x16))
 ```
 
 #### Using another I2C address / bus number
