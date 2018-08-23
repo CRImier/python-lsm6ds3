@@ -77,39 +77,39 @@ class LSM6DS3(object):
             self.write_reg(getattr(self, reg_name), self.initial_reg_values[i])
         return True
 
+    def make_16bit_value(self, vh, vl):
+        v = (vh << 8) | vl
+        return v
+
     def get_raw_gyro_values(self):
         gxh = self.read_reg(self.OUTX_H_G)
         gxl = self.read_reg(self.OUTX_L_G)
-        gx = (gxh << 4) | (gxl >> 4)
-        if (gxh & 0x80): gx |= 0xF000
+        gx = self.make_16bit_value(gxh, gxl)
 
         gyh = self.read_reg(self.OUTY_H_G)
         gyl = self.read_reg(self.OUTY_L_G)
-        gy = (gyh << 4) | (gyl >> 4)
-        if (gyh & 0x80): gy |= 0xF000
+        gy = self.make_16bit_value(gyh, gyl)
 
         gzh = self.read_reg(self.OUTZ_H_G)
         gzl = self.read_reg(self.OUTZ_L_G)
-        gz = (gzh << 4) | (gzl >> 4)
-        if (gzh & 0x80): gz |= 0xF000
+        gz = self.make_16bit_value(gzh, gzl)
 
         return gx, gy, gz
 
     def get_raw_accel_values(self):
         axh = self.read_reg(self.OUTX_H_XL)
         axl = self.read_reg(self.OUTX_L_XL)
-        ax = (axh << 4) | (axl >> 4)
-        if (axh & 0x80): ax |= 0xF000
+        ax = self.make_16bit_value(axh, axl)
 
         ayh = self.read_reg(self.OUTY_H_XL)
         ayl = self.read_reg(self.OUTY_L_XL)
-        ay = (ayh <<4) | (ayl >> 4)
-        if (ayh & 0x80): ay |= 0xF000
+        ay = self.make_16bit_value(ayh, ayl)
+
+        #print("{}\t{}".format(hex(ayh), hex(ayl)))
 
         azh = self.read_reg(self.OUTZ_H_XL)
         azl = self.read_reg(self.OUTZ_L_XL)
-        az = (azh << 4) | (azl >> 4)
-        if (azh & 0x80): az |= 0xF000
+        az = self.make_16bit_value(azh, azl)
 
         return ax, ay, az
 
